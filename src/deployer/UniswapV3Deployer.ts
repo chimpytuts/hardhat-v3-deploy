@@ -20,22 +20,20 @@ export class UniswapV3Deployer {
   static async deploy(actor: Signer): Promise<{ [name: string]: Contract }> {
     const deployer = new UniswapV3Deployer(actor);
 
-    const weth9 = await deployer.deployWETH9();
     const factory = await deployer.deployFactory();
-    const router = await deployer.deployRouter(factory.address, weth9.address);
+    const router = await deployer.deployRouter(factory.address, "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c");
     const nftDescriptorLibrary = await deployer.deployNFTDescriptorLibrary();
     const positionDescriptor = await deployer.deployPositionDescriptor(
       nftDescriptorLibrary.address,
-      weth9.address
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c"
     );
     const positionManager = await deployer.deployNonfungiblePositionManager(
       factory.address,
-      weth9.address,
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
       positionDescriptor.address
     );
 
     return {
-      weth9,
       factory,
       router,
       nftDescriptorLibrary,
@@ -54,15 +52,6 @@ export class UniswapV3Deployer {
     return await this.deployContract<Contract>(
       artifacts.UniswapV3Factory.abi,
       artifacts.UniswapV3Factory.bytecode,
-      [],
-      this.deployer
-    );
-  }
-
-  async deployWETH9() {
-    return await this.deployContract<Contract>(
-      artifacts.WETH9.abi,
-      artifacts.WETH9.bytecode,
       [],
       this.deployer
     );
